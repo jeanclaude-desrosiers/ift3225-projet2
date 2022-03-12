@@ -1,8 +1,10 @@
 const STORAGE_KEY = 'relations';
 
 /**
+ * Saves a (or multiple) Relation object(s) into localStorage.
+ * Adds them to the already saved relations
  * 
- * @param {Relation|Relation[]} relations
+ * @param {Relation|Relation[]} relations the relation(s) to save
  */
 function save_relations(relations) {
     let existing_relations = load_relations();
@@ -14,7 +16,9 @@ function save_relations(relations) {
 }
 
 /**
- * @return {Relation[]}
+ * Loads all the relations saved into localStorage
+ * 
+ * @return {Relation[]} saved relations, or an empty array
  */
 function load_relations() {
     relations_str = localStorage.getItem(STORAGE_KEY);
