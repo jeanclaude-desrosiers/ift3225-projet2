@@ -70,7 +70,7 @@ class Concept {
  */
 class Relation {
     /**
-     * The 'example' part in '/c/en/example'
+     * The 'Synonym' part in '/r/Synonym'
      * @type {string}
      */
     id;
@@ -92,6 +92,30 @@ class Relation {
     end;
 
     constructor() { }
+
+    /**
+     * @type {string}
+     */
+    get full_id() {
+        return `/a/[/r/${this.id}/,${this.start.full_id}/,${this.end.full_id}/]`;
+    }
+
+    /**
+     * @type {string}
+     */
+    get short_id() {
+        return `/r/${this.id}`;
+    }
+
+    /**
+     * 
+     * @param {Relation} relation 
+     * @returns {boolean}
+     */
+    static is_french_or_english(relation) {
+        return [relation.start.lang, relation.end.lang]
+            .every(lang => lang == 'en' || lang == 'fr');
+    }
 
     /**
      * Parses a JSON object into a new Relation object
@@ -132,121 +156,49 @@ class Relation {
     }
 }
 
+function get_table_headers() {
+    let ths = ['Start', 'Start (lang)', 'Relation', 'End', 'End (lang)'].map(label => {
+        let th = document.createElement('th');
+        th.textContent = label;
+
+        return th;
+    });
+
+    let tr = document.createElement('tr');
+    ths.forEach(th => tr.append(th));
+
+    let thead = document.createElement('thead');
+    thead.append(tr);
+
+    return thead;
+}
+
+
 /**
- * Keeps track of ConceptNet query results pagination
+ * 
+ * @param {Relation[]} relations 
+ * @param {Element} table 
  */
-class Bookmark {
-    /**
-     * @type {number}
-     */
-    current_offset;
+function sync_table(relations, table) {
+    table.innerHTML = '';
 
-    /**
-     * @type {number}
-     */
-    #_limit;
+    table.append(get_table_headers())
+    let tbody = document.createElement('tbody');
+    table.append(tbody);
 
-    get limit() {
-        return this.#_limit;
-    }
+    relations.forEach(relation => {
+        let tds = [relation.start.name, relation.start.lang,
+        relation.name, relation.end.name, relation.end.lang]
+            .map(label => {
+                let td = document.createElement('td');
+                td.textContent = label;
 
-    /**
-     * @param {number} new_limit 
-     */
-    set limit(new_limit) {
-        this._limit = new_limit;
-        /*
-         * ensure the new offset is the largest multiple of
-         * the new limit, smaller than the old offset
-         */
-        this.current_offset =
-            Math.floor(this.current_offset / this._limit) * this._limit;
+                return td;
+            });
 
-        this._has_next = false;
-    }
+        let tr = document.createElement('tr');
+        tds.forEach(td => tr.append(td));
 
-    /**
-     * @type {boolean}
-     */
-    get has_previous() {
-        this.current_offset - this.limit >= 0;
-    }
-
-    /**
-     * @type {boolean}
-     */
-    #_has_next;
-
-    get has_next() {
-        return this._has_next;
-    }
-
-    constructor(limit) {
-        this._limit = Math.max(1, Math.round(limit));
-        this.current_offset = 0;
-        this._has_next = false;
-    }
-
-    get has_prev_page() {
-        return this.previous_offset != NO_OFFSET;
-    }
-
-    get has_next_page() {
-        return this.next_offset != NO_OFFSET;
-    }
-
-    /**
-     * Applies the appropriate 'limit' and 'offset' attributes on an existing query,
-     * to get the following result page. If there is no next page, the parameters
-     * for the current page are applied
-     * 
-     * @param {object} param existing parameters object
-     * 
-     * @returns {object} parameters object, with pagination
-     */
-    apply_next_page(param) {
-        param.limit = this.limit;
-        param.offset = this.current_offset +
-            (this.has_next ? this.limit : 0);
-
-        return param;
-    }
-
-    /**
-     * Applies the appropriate 'limit' and 'offset' attributes on an existing query,
-     * to get the previous result page. If there is no previous page, the parameters
-     * for the current page are applied
-     * 
-     * @param {object} param existing parameters object
-     * 
-     * @returns {object} parameters object, with pagination
-     */
-    apply_previous_page(param) {
-        param.limit = this.limit;
-        param.offset = this.current_offset -
-            (this.has_previous ? this.limit : 0);
-
-        return param;
-    }
-
-    /**
-     * Updates pagination information, to reflect the current state of
-     * the results given
-     * 
-     * @param {object} api_response return value of the query_api function
-     */
-    update_with(api_response) {
-        if (api_response.view) {
-            let api_obj = api_response.view;
-            current_param = _query_str_to_param(api_obj['@id']);
-
-            this.current_offset = current_param.offset;
-            this.limit = current_param.limit
-            this._has_next = api_obj.nextPage ? true : false;
-        }
-        else {
-            this.current_offset = 0;
-            this._has_next = false;
-        }
-    }
+        tbody.append(tr);
+    });
 }

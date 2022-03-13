@@ -1,18 +1,35 @@
-const STORAGE_KEY = 'relations';
-
 /**
- * Saves a (or multiple) Relation object(s) into localStorage.
+ * Saves multiple Relation objects into localStorage.
  * Adds them to the already saved relations
  * 
- * @param {Relation|Relation[]} relations the relation(s) to save
+ * @param {Relation[]} relations the relations to save
  */
 function save_relations(relations) {
-    let existing_relations = load_relations();
+    relations.forEach(relation =>
+        localStorage.setItem(relation.full_id, JSON.stringify(relation))
+    );
+}
 
-    existing_relations.push(relations);
+/**
+ * Loads all the relations saved into localStorage
+ * 
+ * @returns {object} a 'full_id' => 'Relation' map object
+ */
+function load_relations_map() {
+    let relations_map = {};
 
-    let to_save = JSON.stringify(existing_relations);
-    localStorage.setItem(STORAGE_KEY, to_save);
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+
+        if (key.startsWith('/a/')) {
+            // Parse from string to JSON ...
+            relations_map[key] = JSON.parse(localStorage.getItem(key));
+            // ... and then from JSON to Relation
+            relations_map[key] = Relation.from_json(relations_map[key]);
+        }
+    }
+
+    return relations_map;
 }
 
 /**
@@ -21,13 +38,18 @@ function save_relations(relations) {
  * @return {Relation[]} saved relations, or an empty array
  */
 function load_relations() {
-    relations_str = localStorage.getItem(STORAGE_KEY);
+    let relations = [];
 
-    if (relations_str) {
-        relations_obj = JSON.parse(relations_str);
-        return relations_obj.map(Relation.from_json);
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+
+        if (key.startsWith('/a/')) {
+            // Parse from string to JSON ...
+            let json_obj = JSON.parse(localStorage.getItem(key));
+            // ... and then from JSON to Relation
+            relations.push(Relation.from_json(json_obj));
+        }
     }
-    else {
-        return [];
-    }
+
+    return relations;
 }

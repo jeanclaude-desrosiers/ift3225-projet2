@@ -9,14 +9,39 @@
     <title>IFT-3225 : Projet 2</title>
 
     <!-- https://sweetalert2.github.io/ -->
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/sweetalert2.all.min.js"></script>
     <script src="js/data.js"></script>
+    <script src="js/query.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/index.js"></script>
 </head>
 
 <body>
-    <h1>Hello, world!</h1>
+    <main>
+        <label>
+            Concept :
+            <input id="concept-in">
+        </label><br>
+        <label>
+            Relation :
+            <input id="relation-in">
+        </label><br>
+        <button id="search-btn">Search</button><br>
+        <button id="prev-btn">Prev</button>
+        <button id="next-btn">Next</button><br>
+        <table id="relations-table">
+            <thead>
+                <tr>
+                    <th>Start</th>
+                    <th>Relation</th>
+                    <th>End</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </main>
 </body>
 
 </html>
