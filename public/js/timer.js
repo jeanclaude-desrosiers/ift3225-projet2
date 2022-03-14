@@ -76,22 +76,22 @@ class Timer {
     pretty_print(format) {
         let rem_time = this.remaining_seconds;
 
-        let seconds = rem_time % (60 ^ 1);
+        let seconds = rem_time % (60 ** 1);
         rem_time -= seconds;
 
-        let minutes = rem_time % (60 ^ 2);
+        let minutes = (rem_time % (60 ** 2)) / (60 ** 1);
         rem_time -= minutes * 60;
 
-        let hours = rem_time / (60 ^ 2);
+        let hours = rem_time / (60 ** 2);
 
         return format.split(':').map(flag => {
             switch (flag) {
                 case 'HH':
-                    return str(hours);
+                    return hours.toString().padStart(2, '0');
                 case 'MM':
-                    return str(minutes);
+                    return minutes.toString().padStart(2, '0');
                 case 'SS':
-                    return str(seconds);
+                    return seconds.toString().padStart(2, '0');
                 default:
                     return '##';
             }

@@ -7,18 +7,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>IFT-3225 : Projet 2</title>
-    
+
+    <!-- https://sweetalert2.github.io/ -->
+    <script src="js/sweetalert2.all.min.js"></script>
     <script src="js/data.js"></script>
+    <script src="js/query.js"></script>
     <script src="js/storage.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/consult.js"></script>
 </head>
 
 <body>
-    <nav>
-        <a href="consult.html">Consult</a>
-        <a href="play.html">Play</a>
-    </nav>
     <main>
+        <label>
+            Concept :
+            <input id="concept-in">
+        </label><br>
+        <label>
+            Relation :
+            <input id="relation-in">
+        </label><br>
+        <button id="search-btn">Search</button><br>
+        <button id="prev-btn">Prev</button>
+        <button id="next-btn">Next</button><br>
         <table id="relations-table">
             <thead>
                 <tr>
