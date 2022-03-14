@@ -13,6 +13,10 @@ class Timer {
      */
     #start_time;
 
+    get start_seconds() {
+        return Math.floor(this.#start_time / 1000);
+    }
+
     /**
      * In milliseconds
      * @type {number}
@@ -47,7 +51,7 @@ class Timer {
     start() {
         this.#interval_id = setInterval(() => {
             this.#rem_time -= TIMER_PRECISION;
-            if(this.#rem_time <= 0) {
+            if (this.#rem_time <= 0) {
                 clearInterval(this.#interval_id);
             }
 
@@ -56,7 +60,7 @@ class Timer {
     }
 
     stop() {
-        if(this.#interval_id) {
+        if (this.#interval_id) {
             clearInterval(this.#interval_id);
         }
     }
